@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PhotoApplication</string>
+    <string name="action_settings">Settings</string>
+    <string name="shareActionTitle">Share</string>
+    <string name="emptyText">The list is empty. Try searching again</string>
+    <string name="title">Title</string>
+    <string name="caption">Caption</string>
+    <string name="save">Save</string>
+</resources>
