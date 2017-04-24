@@ -80,12 +80,13 @@ public class ImageViewActivity extends AppCompatActivity {
         if (photo.getImage() != null) {
             ivTouchImageView.setImageBitmap(photo.getImage());
         } else {
-                Glide.with(this).load(photo.getPhoto())
-                        .asBitmap()
-                        .placeholder(R.mipmap.ic_launcher)
-                        .signature(new StringSignature(imageUuid))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(ivTouchImageView);
+            Glide.with(this).load(photo.getPhoto())
+                    .asBitmap()
+                    .placeholder(R.mipmap.ic_launcher)
+                    .signature(new StringSignature(imageUuid))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(ivTouchImageView);
         }
         tvCaption.setText(photo.getComment());
     }
@@ -106,27 +107,20 @@ public class ImageViewActivity extends AppCompatActivity {
             RxPermissions rxPermissions = new RxPermissions(this);
             rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(granted -> {
                 if (granted) {
-                    Runnable r = () -> {
-                        final Uri bmpUri = getLocalBitmapUri(ivTouchImageView);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (bmpUri != null) {
-                                    // Construct a ShareIntent with link to image
-                                    Intent shareIntent = new Intent();
-                                    shareIntent.setAction(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-                                    shareIntent.setType("image/*");
-                                    // Launch sharing dialog for image
-                                    startActivity(Intent.createChooser(shareIntent, "Share Image"));
-                                } else {
-                                    Snackbar.make(ivTouchImageView, "Unable to share this image", Snackbar.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-                    };
-                    new Thread(r).start();
-
+                    final Uri bmpUri = getLocalBitmapUri(ivTouchImageView);
+                    runOnUiThread(() -> {
+                        if (bmpUri != null) {
+                            // Construct a ShareIntent with link to image
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND);
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+                            shareIntent.setType("image/*");
+                            // Launch sharing dialog for image
+                            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+                        } else {
+                            Snackbar.make(ivTouchImageView, "Unable to share this image", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
                 } else {
                     Toast.makeText(this, "Need storage permission before performing this action!", Toast.LENGTH_SHORT).show();
                 }

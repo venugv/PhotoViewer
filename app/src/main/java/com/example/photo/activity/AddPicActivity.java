@@ -195,7 +195,7 @@ public class AddPicActivity extends AppCompatActivity {
         } else if (id == R.id.action_save) {
             if (!picChosen) {
                 Toast.makeText(this, "Please choose an image!!", Toast.LENGTH_SHORT).show();
-                return;
+                return true;
             }
             Photo photo = new Photo();
             photo.setImage(((BitmapDrawable) this.imageView.getDrawable()).getBitmap());
